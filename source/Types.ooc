@@ -162,7 +162,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     add: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v + op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsFloat new(_toFloat() + op _toFloat())
@@ -173,7 +173,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     sub: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v - op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsFloat new(_toFloat() - op _toFloat())
@@ -184,7 +184,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     mul: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v * op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsFloat new(_toFloat() * op _toFloat())
@@ -195,7 +195,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     div: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger)) {
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean)) {
             d := op _toFloat()
             if (d == 0.0)
                 return WmlsInvalid new()
@@ -216,7 +216,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     idiv: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger)) {
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean)) {
             d := op _toInt()
             if (d == 0)
                 return WmlsInvalid new()
@@ -230,7 +230,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     rem: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger)) {
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean)) {
             d := op _toInt()
             if (d == 0)
                 return WmlsInvalid new()
@@ -244,7 +244,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     band: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v & op _toInt())
         else if (op instanceOf?(WmlsString))
             return this band(op as WmlsString parseInt())
@@ -253,7 +253,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     bor: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v | op _toInt())
         else if (op instanceOf?(WmlsString))
             return this bor(op as WmlsString parseInt())
@@ -262,7 +262,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     bxor: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v ^ op _toInt())
         else if (op instanceOf?(WmlsString))
             return this bxor(op as WmlsString parseInt())
@@ -275,7 +275,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     blshift: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v << op _toInt())
         else if (op instanceOf?(WmlsString))
             return this blshift(op as WmlsString parseInt())
@@ -284,7 +284,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     brsshift: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v >> op _toInt())
         else if (op instanceOf?(WmlsString))
             return this brsshift(op as WmlsString parseInt())
@@ -293,7 +293,7 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     brszshift: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(v >> op _toInt())
         else if (op instanceOf?(WmlsString))
             return this brszshift(op as WmlsString parseInt())
@@ -302,67 +302,67 @@ WmlsInteger: class extends WmlsNumber {
     }
 
     eq: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v == op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() == op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() == op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) == 0)
         else
             return WmlsInvalid new()
     }
 
     le: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v <= op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() <= op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() <= op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) <= 0)
         else
             return WmlsInvalid new()
     }
 
     lt: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v < op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() < op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() < op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) < 0)
         else
             return WmlsInvalid new()
     }
 
     ge: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v >= op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() >= op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() >= op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) >= 0)
         else
             return WmlsInvalid new()
     }
 
     gt: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v > op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() > op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() > op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) > 0)
         else
             return WmlsInvalid new()
     }
 
     ne: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v != op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() != op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() != op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) != 0)
         else
             return WmlsInvalid new()
     }
@@ -419,7 +419,7 @@ WmlsFloat: class extends WmlsNumber {
     }
 
     add: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsFloat new(v + op _toFloat())
         else if (op instanceOf?(WmlsString))
             return WmlsString new(_toString() + op _toString())
@@ -428,7 +428,7 @@ WmlsFloat: class extends WmlsNumber {
     }
 
     sub: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsFloat new(v - op _toFloat())
         else if (op instanceOf?(WmlsString))
             return this sub(op as WmlsString parseNumber())
@@ -437,7 +437,7 @@ WmlsFloat: class extends WmlsNumber {
     }
 
     mul: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsFloat new(v * op _toFloat())
         else if (op instanceOf?(WmlsString))
             return this mul(op as WmlsString parseNumber())
@@ -446,7 +446,7 @@ WmlsFloat: class extends WmlsNumber {
     }
 
     div: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber)) {
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean)) {
             d := op _toFloat()
             if (d == 0.0)
                 return WmlsInvalid new()
@@ -460,55 +460,55 @@ WmlsFloat: class extends WmlsNumber {
     }
 
     eq: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v == op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() == op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) == 0)
         else
             return WmlsInvalid new()
     }
 
     le: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v <= op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() <= op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) <= 0)
         else
             return WmlsInvalid new()
     }
 
     lt: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v < op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() < op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) < 0)
         else
             return WmlsInvalid new()
     }
 
     ge: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v >= op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() >= op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) >= 0)
         else
             return WmlsInvalid new()
     }
 
     gt: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v > op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() > op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) > 0)
         else
             return WmlsInvalid new()
     }
 
     ne: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber))
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(v != op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() != op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) != 0)
         else
             return WmlsInvalid new()
     }
@@ -610,42 +610,42 @@ WmlsString: class extends WmlsAny {
         if (op instanceOf?(WmlsInvalid))
             return WmlsInvalid new()
         else
-            return WmlsBoolean new(v == op _toString())
+            return WmlsBoolean new(strcmp(v, op _toString()) == 0)
     }
 
     le: func(op: WmlsAny) -> WmlsAny {
         if (op instanceOf?(WmlsInvalid))
             return WmlsInvalid new()
         else
-            return WmlsBoolean new(v <= op _toString())
+            return WmlsBoolean new(strcmp(v, op _toString()) <= 0)
     }
 
     lt: func(op: WmlsAny) -> WmlsAny {
         if (op instanceOf?(WmlsInvalid))
             return WmlsInvalid new()
         else
-            return WmlsBoolean new(v < op _toString())
+            return WmlsBoolean new(strcmp(v, op _toString()) < 0)
     }
 
     ge: func(op: WmlsAny) -> WmlsAny {
         if (op instanceOf?(WmlsInvalid))
             return WmlsInvalid new()
         else
-            return WmlsBoolean new(v >= op _toString())
+            return WmlsBoolean new(strcmp(v, op _toString()) >= 0)
     }
 
     gt: func(op: WmlsAny) -> WmlsAny {
         if (op instanceOf?(WmlsInvalid))
             return WmlsInvalid new()
         else
-            return WmlsBoolean new(v > op _toString())
+            return WmlsBoolean new(strcmp(v, op _toString()) > 0)
     }
 
     ne: func(op: WmlsAny) -> WmlsAny {
         if (op instanceOf?(WmlsInvalid))
             return WmlsInvalid new()
         else
-            return WmlsBoolean new(v != op _toString())
+            return WmlsBoolean new(strcmp(v, op _toString()) != 0)
     }
 
     not: func -> WmlsAny {
@@ -694,7 +694,7 @@ WmlsString: class extends WmlsAny {
     }
 }
 
-WmlsBoolean: class extends WmlsInteger {
+WmlsBoolean: class extends WmlsAny {
     v: Bool
 
     init: func(=v) {}
@@ -732,7 +732,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     add: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() + op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsFloat new(_toFloat() + op _toFloat())
@@ -743,7 +743,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     sub: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() - op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsFloat new(_toFloat() - op _toFloat())
@@ -754,7 +754,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     mul: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() * op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsFloat new(_toFloat() * op _toFloat())
@@ -765,7 +765,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     div: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsNumber)) {
+        if (op instanceOf?(WmlsNumber) || op instanceOf?(WmlsBoolean)) {
             d := op _toFloat()
             if (d == 0.0)
                 return WmlsInvalid new()
@@ -779,7 +779,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     idiv: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger)) {
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean)) {
             d := op _toInt()
             if (d == 0)
                 return WmlsInvalid new()
@@ -793,7 +793,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     rem: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger)) {
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean)) {
             d := op _toInt()
             if (d == 0)
                 return WmlsInvalid new()
@@ -807,7 +807,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     band: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() & op _toInt())
         else if (op instanceOf?(WmlsString))
             return this band(op as WmlsString parseInt())
@@ -816,7 +816,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     bor: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() | op _toInt())
         else if (op instanceOf?(WmlsString))
             return this bor(op as WmlsString parseInt())
@@ -825,7 +825,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     bxor: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() ^ op _toInt())
         else if (op instanceOf?(WmlsString))
             return this bxor(op as WmlsString parseInt())
@@ -838,7 +838,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     blshift: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() << op _toInt())
         else if (op instanceOf?(WmlsString))
             return this blshift(op as WmlsString parseInt())
@@ -847,7 +847,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     brsshift: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() >> op _toInt())
         else if (op instanceOf?(WmlsString))
             return this brsshift(op as WmlsString parseInt())
@@ -856,7 +856,7 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     brszshift: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsInteger new(_toInt() >> op _toInt())
         else if (op instanceOf?(WmlsString))
             return this brszshift(op as WmlsString parseInt())
@@ -865,67 +865,67 @@ WmlsBoolean: class extends WmlsInteger {
     }
 
     eq: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(_toInt() == op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() == op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() == op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) == 0)
         else
             return WmlsInvalid new()
     }
 
     le: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(_toInt() <= op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() <= op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() <= op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) <= 0)
         else
             return WmlsInvalid new()
     }
 
     lt: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(_toInt() < op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() < op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() < op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) < 0)
         else
             return WmlsInvalid new()
     }
 
     ge: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(_toInt() >= op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() >= op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() >= op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) >= 0)
         else
             return WmlsInvalid new()
     }
 
     gt: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(_toInt() > op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() > op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() > op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) > 0)
         else
             return WmlsInvalid new()
     }
 
     ne: func(op: WmlsAny) -> WmlsAny {
-        if (op instanceOf?(WmlsInteger))
+        if (op instanceOf?(WmlsInteger) || op instanceOf?(WmlsBoolean))
             return WmlsBoolean new(_toInt() != op _toInt())
         else if (op instanceOf?(WmlsFloat))
             return WmlsBoolean new(_toFloat() != op _toFloat())
         else if (op instanceOf?(WmlsString))
-            return WmlsBoolean new(_toString() != op _toString())
+            return WmlsBoolean new(strcmp(_toString(), op _toString()) != 0)
         else
             return WmlsInvalid new()
     }

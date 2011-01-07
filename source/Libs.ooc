@@ -24,50 +24,38 @@ langLib put(1, func(interp: Interp) -> WmlsAny {
     // min(number1, number2)
     val2 := interp pop()
     val1 := interp pop()
-    if (val1 instanceOf?(WmlsString))
-        val1 = val1 as WmlsString parseNumber()
-    if (val2 instanceOf?(WmlsString))
-        val2 = val2 as WmlsString parseNumber()
-    diff := val1 sub(val2)
-    if (diff instanceOf?(WmlsInteger)) {
-        if (diff _toInt() < 0)
-            return WmlsInteger new(val1 _toInt())
-        else
-            return WmlsInteger new(val2 _toInt())
-    }
-    else if (diff instanceOf?(WmlsFloat)) {
-        if (diff _toFloat() < 0.0)
-            return WmlsFloat new(val1 _toFloat())
-        else
-            return WmlsFloat new(val2 _toFloat())
-    }
-    else
+    num1 := val1
+    num2 := val2
+    if (num1 instanceOf?(WmlsString))
+        num1 = num1 as WmlsString parseNumber()
+    if (num2 instanceOf?(WmlsString))
+        num2 = num2 as WmlsString parseNumber()
+    cmp := num1 le(num2)
+    if (cmp instanceOf?(WmlsInvalid))
         return WmlsInvalid new()
+    if (cmp _toBool())
+        return val1
+    else
+        return val2
 })
 
 langLib put(2, func(interp: Interp) -> WmlsAny {
     // max(number1, number2)
     val2 := interp pop()
     val1 := interp pop()
-    if (val1 instanceOf?(WmlsString))
-        val1 = val1 as WmlsString parseNumber()
-    if (val2 instanceOf?(WmlsString))
-        val2 = val2 as WmlsString parseNumber()
-    diff := val1 sub(val2)
-    if (diff instanceOf?(WmlsInteger)) {
-        if (diff _toInt() >= 0)
-            return WmlsInteger new(val1 _toInt())
-        else
-            return WmlsInteger new(val2 _toInt())
-    }
-    else if (diff instanceOf?(WmlsFloat)) {
-        if (diff _toFloat() >= 0.0)
-            return WmlsFloat new(val1 _toFloat())
-        else
-            return WmlsFloat new(val2 _toFloat())
-    }
-    else
+    num1 := val1
+    num2 := val2
+    if (num1 instanceOf?(WmlsString))
+        num1 = num1 as WmlsString parseNumber()
+    if (num2 instanceOf?(WmlsString))
+        num2 = num2 as WmlsString parseNumber()
+    cmp := num1 ge(num2)
+    if (cmp instanceOf?(WmlsInvalid))
         return WmlsInvalid new()
+    if (cmp _toBool())
+        return val1
+    else
+        return val2
 })
 
 langLib put(3, func(interp: Interp) -> WmlsAny {
@@ -95,23 +83,21 @@ langLib put(4, func(interp: Interp) -> WmlsAny {
 langLib put(5, func(interp: Interp) -> WmlsAny {
     // isInt(value)
     val := interp pop()
-    if (val instanceOf?(WmlsString))
-        val = val as WmlsString parseInt()
     if (val instanceOf?(WmlsInvalid))
         return WmlsInvalid new()
-    else
-        return WmlsBoolean new(val instanceOf?(WmlsInteger))
+    if (val instanceOf?(WmlsString))
+        val = val as WmlsString parseInt()
+    return WmlsBoolean new(val instanceOf?(WmlsInteger))
 })
 
 langLib put(6, func(interp: Interp) -> WmlsAny {
     // isFloat(value)
     val := interp pop()
-    if (val instanceOf?(WmlsString))
-        val = val as WmlsString parseFloat()
     if (val instanceOf?(WmlsInvalid))
         return WmlsInvalid new()
-    else
-        return WmlsBoolean new(val instanceOf?(WmlsNumber))
+    if (val instanceOf?(WmlsString))
+        val = val as WmlsString parseNumber()
+    return WmlsBoolean new(val instanceOf?(WmlsNumber))
 })
 
 langLib put(7, func(interp: Interp) -> WmlsAny {
@@ -156,7 +142,7 @@ langLib put(12, func(interp: Interp) -> WmlsAny {
     if (val instanceOf?(WmlsInvalid) || val _toInt() < 0)
         return WmlsInvalid new()
     max := val _toInt()
-    return WmlsInteger new(max == 0 ? 0 : rand() % (max+1))
+    return WmlsInteger new(max == 0 ? 0 : rand() % max)
 })
 
 langLib put(13, func(interp: Interp) -> WmlsAny {
@@ -285,12 +271,12 @@ stringLib put(2, func(interp: Interp) -> WmlsAny {
     str := interp pop()
     if (idx instanceOf?(WmlsString))
         idx = idx as WmlsString parseNumber()
-    if (str instanceOf?(WmlsInvalid) || idx instanceOf?(WmlsInvalid))
+    if (str instanceOf?(WmlsInvalid) || ! idx instanceOf?(WmlsNumber))
         return WmlsInvalid new()
     s := str _toString()
     len := s length()
     i := idx _toInt()
-    return WmlsString new(i >= 0 && i < len ? s substring(i, 1) : "")
+    return WmlsString new(i >= 0 && i < len ? s substring(i, i+1) : "")
 })
 
 stringLib put(3, func(interp: Interp) -> WmlsAny {
@@ -302,13 +288,18 @@ stringLib put(3, func(interp: Interp) -> WmlsAny {
         len = len as WmlsString parseNumber()
     if (idx instanceOf?(WmlsString))
         idx = idx as WmlsString parseNumber()
-    if (str instanceOf?(WmlsInvalid) || idx instanceOf?(WmlsInvalid) ||
-        len instanceOf?(WmlsInvalid))
+    if (str instanceOf?(WmlsInvalid) || ! idx instanceOf?(WmlsNumber) ||
+        ! len instanceOf?(WmlsNumber))
         return WmlsInvalid new()
     s := str _toString()
     i := idx _toInt()
+    if (i < 0) i = 0
     l := len _toInt()
-    return WmlsString new(s substring(i, l))
+    if (l < 0) l = 0
+    e := i+l
+    m := s length()
+    if (e > m) e = m
+    return WmlsString new(s substring(i, e))
 })
 
 stringLib put(4, func(interp: Interp) -> WmlsAny {
@@ -364,10 +355,7 @@ stringLib put(13, func(interp: Interp) -> WmlsAny {
     str1 := interp pop()
     if (str1 instanceOf?(WmlsInvalid) || str2 instanceOf?(WmlsInvalid))
         return WmlsInvalid new()
-    s1 := str1 _toString()
-    s2 := str2 _toString()
-    cmp := (s1 == s2) ? 0 : ((s1 < s2) ? -1 : 1)
-    return WmlsInteger new(cmp)
+    return WmlsInteger new(strcmp(str1 _toString(), str2 _toString()))
 })
 
 stringLib put(14, func(interp: Interp) -> WmlsAny {
