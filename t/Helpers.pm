@@ -32,10 +32,10 @@ sub wmls_is {
     my $out = qx{./wmlsi $bytecode $function $params};
 
     my $pass = $out eq $expected;
+    $builder->todo_start($options{todo}) if exists $options{todo};
     $builder->ok($pass, $desc);
     $builder->_is_diag($out, 'eq', $expected) unless $pass;
-
-#    is($out, $expected, $desc);
+    $builder->todo_end() if exists $options{todo};
 }
 
 sub wmls_like {
