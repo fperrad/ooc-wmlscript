@@ -57,7 +57,9 @@ sub wmls_like {
 #    $builder->ok($pass, $desc);
 #    $builder->_is_diag($out, 'eq', $expected) unless $pass;
 
+    $builder->todo_start($options{todo}) if exists $options{todo};
     like($out, $patt, $desc);
+    $builder->todo_end() if exists $options{todo};
 }
 
 1;

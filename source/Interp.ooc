@@ -13,16 +13,13 @@ WmlsLib: class extends HashMap<UInt, Func(Interp)> {
 }
 */
 
-WmlsException: class extends Exception {
-    init: func(=origin, =message) {}
-}
-
 ContextReturn: class {
     baseVar: UInt8 { get set }
     functionIndex: UInt8 { get set }
     pc: UInt16 { get set }
+    script: Script { get set }
 
-    init: func~call(=baseVar, =functionIndex, =pc) {}
+    init: func~call(=baseVar, =functionIndex, =pc, =script) {}
 }
 
 Interp: class {
@@ -31,18 +28,16 @@ Interp: class {
     returns:            ArrayList<ContextReturn>
     constants:          ArrayList<WmlsAny>
     baseVar:            SizeT
-    baseOperand:        SizeT
-    operandPtr:         SizeT
-    headScript:         Script
     script:             Script
     functionIndex:      UInt8
     nbVar:              UInt8
+    nbCst:              UInt16
     codeArray:          ArrayList<UInt8>
     codeSize:           UInt16
     pc:                 UInt16
 
     init: func(capacity: SizeT,
-                      =headScript,
+                      =script,
                       =functionIndex,
                       args: ArrayList<String>) {
         libs = HashMap<UInt, Func(Interp) -> WmlsAny > new()
@@ -50,20 +45,18 @@ Interp: class {
         returns = ArrayList<ContextReturn> new()
         baseVar = 0
 
-        constants = headScript constants
-        fct := headScript functions[functionIndex]
-        script = headScript
+        constants = script constants
+        nbCst = constants getSize()
+        fct := script functions[functionIndex]
         nbVar = fct numberOfArguments + fct numberOfLocalVariables
         codeArray = fct codeArray
         codeSize = codeArray getSize()
         pc = 0
 
-        baseOperand = baseVar + nbVar
         for (arg in args)
             push(WmlsString new(arg))
         for (i in 0..fct numberOfLocalVariables)
             push(WmlsString new(""))
-        operandPtr = baseOperand
     }
 
     addLib: func(lindex: UInt16,
@@ -79,6 +72,7 @@ Interp: class {
             pc += 1
             info := args[opcode]
             if (info != 0) {
+                idx0 = 0
                 match (info & 0x000F) {
                     case INLINE3 =>
                         idx0 = opcode & 0x07
@@ -225,10 +219,16 @@ Interp: class {
                         error("VerificationFailed")
                     stack[baseVar + idx1] = stack[baseVar + idx1] decr()
                 case LOAD_CONST_S =>
+                    if (idx1 >= nbCst)
+                        error("VerificationFailed")
                     push(constants[idx1])
                 case LOAD_CONST =>
+                    if (idx1 >= nbCst)
+                        error("VerificationFailed")
                     push(constants[idx1])
                 case LOAD_CONST_W =>
+                    if (idx1 >= nbCst)
+                        error("VerificationFailed")
                     push(constants[idx1])
                 case CONST_0 =>
                     push(WmlsInteger new(0))
@@ -363,14 +363,43 @@ Interp: class {
     }
 
     call: inline func(findex: UInt8) {
+        returns add(ContextReturn new(baseVar, functionIndex , pc, script))
         if (findex >= script functions getSize())
             error("VerificationFailed")
 
-        fct := headScript functions[findex]
+        fct := script functions[findex]
         nbVar = fct numberOfArguments + fct numberOfLocalVariables
         for (i in 0..fct numberOfLocalVariables)
             push(WmlsString new(""))
-        returns add(ContextReturn new(baseVar, functionIndex , pc))
+        baseVar = stack getSize() - nbVar
+        functionIndex = findex
+        codeArray = fct codeArray
+        codeSize = codeArray getSize()
+        pc = 0
+    }
+
+    callUrl: inline func(urlindex, findex: UInt16, args: UInt8) {
+        returns add(ContextReturn new(baseVar, functionIndex , pc, script))
+        if (urlindex >= nbCst)
+            error("VerificationFailed")
+        url := constants[urlindex]
+        if (! url instanceOf?(WmlsString))
+            error("VerificationFailed")
+        if (findex >= nbCst)
+            error("VerificationFailed")
+        name := constants[findex]
+        if (! name instanceOf?(WmlsString))
+            error("VerificationFailed")
+        script = Script new(url _toString())
+        idx := script find(name _toString())
+        script checkNbArg(idx, args)
+
+        constants = script constants
+        nbCst = constants getSize()
+        fct := script functions[findex]
+        nbVar = fct numberOfArguments + fct numberOfLocalVariables
+        for (i in 0..fct numberOfLocalVariables)
+            push(WmlsString new(""))
         baseVar = stack getSize() - nbVar
         functionIndex = findex
         codeArray = fct codeArray
@@ -388,16 +417,18 @@ Interp: class {
         }
         // restore context
         ctxt := returns removeAt(returns lastIndex())
-        fct := headScript functions[ctxt functionIndex]
+        if (ctxt script != script) {
+            script = ctxt script
+            constants = script constants
+            nbCst = constants getSize()
+        }
+        fct := script functions[ctxt functionIndex]
         nbVar := fct numberOfArguments + fct numberOfLocalVariables
         codeArray = fct codeArray
         codeSize = codeArray getSize()
         pc = ctxt pc
         baseVar = ctxt baseVar
         return false
-    }
-
-    callUrl: inline func(urlindex, findex: UInt16, args: UInt8) {
     }
 
     callLib: inline func(findex: UInt8, lindex: UInt16) {

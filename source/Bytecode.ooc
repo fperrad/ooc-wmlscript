@@ -106,7 +106,7 @@ Script: class {
         stream := FileReader new(filename)
         versionNumber = getUInt8(stream)
         if (versionNumber != 0x01)
-            Exception new("incorrect version") throw()
+            WmlsException new("incorrect version") throw()
         codeSize = getMB32(stream)
 
         numberOfConstants := getMB16(stream)
@@ -134,7 +134,7 @@ Script: class {
                     cst = WmlsString new(getString(stream, stringSize))
                 case =>
                     msg := "invalid ConstantType [%d]." format(constantType)
-                    Exception new(msg) throw()
+                    WmlsException new(msg) throw()
             }
             constants add(cst)
         }
@@ -165,7 +165,7 @@ Script: class {
                                                       schemeIndex)
                 case =>
                     msg := "invalid PragmaType [%d]." format(pragmaType)
-                    Exception new(msg) throw()
+                    WmlsException new(msg) throw()
             }
             pragmas add(prg)
         }
@@ -196,13 +196,13 @@ Script: class {
 
     find: func(name: String) -> UInt8 {
         if (!functionNameTable contains?(name))
-             Exception new("function %s not found" format(name)) throw()
+             WmlsException new("ExternalFunctionNotFound " + name) throw()
         return functionNameTable get(name)
     }
 
     checkNbArg: func(findex, nb: UInt8) {
         if (nb != functions[findex] numberOfArguments)
-             Exception new("bad number of arguments") throw()
+             WmlsException new("InvalidFunctionArgument") throw()
     }
 
     dump: func {

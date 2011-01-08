@@ -1,4 +1,8 @@
 
+WmlsException: class extends Exception {
+    init: func(=origin, =message) {}
+}
+
 WmlsAny: abstract class {
     _repr: abstract func -> String
     _toString: abstract func -> String
@@ -8,12 +12,12 @@ WmlsAny: abstract class {
     }
 
     _toInt: inline func -> Int {
-        Exception new("runtime") throw()
+        WmlsException new("runtime") throw()
         return 0    // avoid warning
     }
 
     _toFloat: inline func -> Float {
-        Exception new("runtime") throw()
+        WmlsException new("runtime") throw()
         return 0.0  // avoid warning
     }
 
