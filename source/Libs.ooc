@@ -1,11 +1,13 @@
 
 import math
-import math/Random
 import os/Time
 import structs/HashMap
 
 import Interp
 import Types
+
+srand: extern func(Int)
+rand: extern func -> Int
 
 langLib := HashMap<UInt8, Func(Interp) -> WmlsAny > new()
 
