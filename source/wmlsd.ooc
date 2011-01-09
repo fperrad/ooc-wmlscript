@@ -1,3 +1,10 @@
+/*
+ *  ooc-wmlscript : <http://fperrad.github.com/lua-TestMore/>
+ *
+ *  Copyright (c) 2011 Francois Perrad
+ *
+ *  This code is licensed under the terms of the Artistic License 2.0.
+ */
 
 import structs/ArrayList
 import Bytecode
