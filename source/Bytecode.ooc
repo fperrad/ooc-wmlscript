@@ -209,7 +209,7 @@ Script: class {
 
     checkNbArg: func(findex, nb: UInt8) {
         if (nb != functions[findex] numberOfArguments)
-             WmlsException new("InvalidFunctionArgument") throw()
+             WmlsException new("InvalidFunctionArguments") throw()
     }
 
     dump: func {

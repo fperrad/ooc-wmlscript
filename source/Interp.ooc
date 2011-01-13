@@ -23,16 +23,16 @@ WmlsLib: class extends HashMap<UInt, Func(Interp)> {
 ContextReturn: class {
     baseVar: UInt8 { get set }
     functionIndex: UInt8 { get set }
-    pc: UInt16 { get set }
+    ip: UInt16 { get set }
     script: Script { get set }
 
-    init: func~call(=baseVar, =functionIndex, =pc, =script) {}
+    init: func~call(=baseVar, =functionIndex, =ip, =script) {}
 }
 
 Interp: class {
     libs:               HashMap<UInt, Func(Interp) -> WmlsAny >
-    stack:              ArrayList<WmlsAny>
-    returns:            ArrayList<ContextReturn>
+    operandStack:       ArrayList<WmlsAny>
+    callStack:          ArrayList<ContextReturn>
     constants:          ArrayList<WmlsAny>
     baseVar:            SizeT
     script:             Script
@@ -41,15 +41,15 @@ Interp: class {
     nbCst:              UInt16
     codeArray:          ArrayList<UInt8>
     codeSize:           UInt16
-    pc:                 UInt16
+    ip:                 UInt16  // Instruction Pointer
 
     init: func(capacity: SizeT,
                       =script,
                       =functionIndex,
                       args: ArrayList<String>) {
         libs = HashMap<UInt, Func(Interp) -> WmlsAny > new()
-        stack = ArrayList<WmlsAny> new(capacity)
-        returns = ArrayList<ContextReturn> new()
+        operandStack = ArrayList<WmlsAny> new(capacity)
+        callStack = ArrayList<ContextReturn> new()
         baseVar = 0
 
         constants = script constants
@@ -58,7 +58,7 @@ Interp: class {
         nbVar = fct numberOfArguments + fct numberOfLocalVariables
         codeArray = fct codeArray
         codeSize = codeArray getSize()
-        pc = 0
+        ip = 0
 
         for (arg in args)
             push(WmlsString new(arg))
@@ -75,8 +75,8 @@ Interp: class {
         while (true) {
             idx0, idx1, idx2, idx3: UInt
 //            dump()
-            opcode := (pc != codeSize) ? codeArray[pc] : RETURN_ES
-            pc += 1
+            opcode := (ip != codeSize) ? codeArray[ip] : RETURN_ES
+            ip += 1
             info := args[opcode]
             if (info != 0) {
                 idx0 = 0
@@ -97,32 +97,32 @@ Interp: class {
                     idx1 = 0
                     match (info & 0x000F) {
                         case ARG8 =>
-                            idx1 = codeArray[pc]
-                            pc += 1
+                            idx1 = codeArray[ip]
+                            ip += 1
                         case ARG16 =>
-                            idx1 = codeArray[pc] * 0x100
-                            pc += 1
-                            idx1 += codeArray[pc]
-                            pc += 1
+                            idx1 = codeArray[ip] * 0x100
+                            ip += 1
+                            idx1 += codeArray[ip]
+                            ip += 1
                     }
                     info /= 0x10
                     if (info != 0) {
                         idx2 = 0
                         match (info & 0x000F) {
                             case ARG8 =>
-                                idx2 = codeArray[pc]
-                                pc += 1
+                                idx2 = codeArray[ip]
+                                ip += 1
                             case ARG16 =>
-                                idx2 = codeArray[pc] * 0x100
-                                pc += 1
-                                idx2 += codeArray[pc]
-                                pc += 1
+                                idx2 = codeArray[ip] * 0x100
+                                ip += 1
+                                idx2 += codeArray[ip]
+                                ip += 1
                         }
                         info /= 0x10
                         if (info != 0) {
                             idx3 = 0
-                            idx3 = codeArray[pc]
-                            pc += 1
+                            idx3 = codeArray[ip]
+                            ip += 1
                         }
                     }
                 }
@@ -130,57 +130,57 @@ Interp: class {
 
             match opcode {
                 case JUMP_FW_S =>
-                    pc = pc + idx1
-                    if (pc > codeSize)
+                    ip = ip + idx1
+                    if (ip > codeSize)
                         error("VerificationFailed")
                 case JUMP_FW =>
-                    pc = pc + idx1
-                    if (pc > codeSize)
+                    ip = ip + idx1
+                    if (ip > codeSize)
                         error("VerificationFailed")
                 case JUMP_FW_W =>
-                    pc = pc + idx1
-                    if (pc > codeSize)
+                    ip = ip + idx1
+                    if (ip > codeSize)
                         error("VerificationFailed")
                 case JUMP_BW_S =>
-                    pc = pc - 1 - idx1
-                    if (pc < 0)
+                    ip = ip - 1 - idx1
+                    if (ip < 0)
                         error("VerificationFailed")
                 case JUMP_BW =>
-                    pc = pc - 2 - idx1
-                    if (pc < 0)
+                    ip = ip - 2 - idx1
+                    if (ip < 0)
                         error("VerificationFailed")
                 case JUMP_BW_W =>
-                    pc = pc - 3 - idx1
-                    if (pc < 0)
+                    ip = ip - 3 - idx1
+                    if (ip < 0)
                         error("VerificationFailed")
                 case TJUMP_FW_S =>
                     if (! pop() _toBool()) {
-                        pc = pc + idx1
-                        if (pc > codeSize)
+                        ip = ip + idx1
+                        if (ip > codeSize)
                             error("VerificationFailed")
                     }
                 case TJUMP_FW =>
                     if (! pop() _toBool()) {
-                        pc = pc + idx1
-                        if (pc > codeSize)
+                        ip = ip + idx1
+                        if (ip > codeSize)
                             error("VerificationFailed")
                     }
                 case TJUMP_FW_W =>
                     if (! pop() _toBool()) {
-                        pc = pc + idx1
-                        if (pc > codeSize)
+                        ip = ip + idx1
+                        if (ip > codeSize)
                             error("VerificationFailed")
                     }
                 case TJUMP_BW =>
                     if (! pop() _toBool()) {
-                        pc = pc - 2 - idx1
-                        if (pc < 0)
+                        ip = ip - 2 - idx1
+                        if (ip < 0)
                             error("VerificationFailed")
                     }
                 case TJUMP_BW_W =>
                     if (! pop() _toBool()) {
-                        pc = pc - 3 - idx1
-                        if (pc < 0)
+                        ip = ip - 3 - idx1
+                        if (ip < 0)
                             error("VerificationFailed")
                     }
                 case CALL_S =>
@@ -200,31 +200,34 @@ Interp: class {
                 case LOAD_VAR_S =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    push(stack[baseVar + idx1])
+                    push(operandStack[baseVar + idx1])
                 case LOAD_VAR =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    push(stack[baseVar + idx1])
+                    push(operandStack[baseVar + idx1])
                 case STORE_VAR_S =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    stack[baseVar + idx1] = pop()
+                    operandStack[baseVar + idx1] = pop()
                 case STORE_VAR =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    stack[baseVar + idx1] = pop()
+                    operandStack[baseVar + idx1] = pop()
                 case INCR_VAR_S =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    stack[baseVar + idx1] = stack[baseVar + idx1] incr()
+                    operandStack[baseVar + idx1] =
+                        operandStack[baseVar + idx1] incr()
                 case INCR_VAR =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    stack[baseVar + idx1] = stack[baseVar + idx1] incr()
+                    operandStack[baseVar + idx1] =
+                        operandStack[baseVar + idx1] incr()
                 case DECR_VAR =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    stack[baseVar + idx1] = stack[baseVar + idx1] decr()
+                    operandStack[baseVar + idx1] =
+                        operandStack[baseVar + idx1] decr()
                 case LOAD_CONST_S =>
                     if (idx1 >= nbCst)
                         error("VerificationFailed")
@@ -258,11 +261,13 @@ Interp: class {
                 case ADD_ASG =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    stack[baseVar + idx1] = stack[baseVar + idx1] add(pop())
+                    operandStack[baseVar + idx1] =
+                        operandStack[baseVar + idx1] add(pop())
                 case SUB_ASG =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    stack[baseVar + idx1] = stack[baseVar + idx1] sub(pop())
+                    operandStack[baseVar + idx1] =
+                        operandStack[baseVar + idx1] sub(pop())
                 case UMINUS =>
                     push(pop() uminus())
                 case ADD =>
@@ -359,18 +364,18 @@ Interp: class {
     }
 
     push: inline func(elt: WmlsAny) {
-        stack add(elt)
+        operandStack add(elt)
     }
 
     pop: inline func() -> WmlsAny {
-        if (stack empty?())
+        if (operandStack empty?())
             error("StackUnderflow")
 
-        return stack removeAt(stack lastIndex())
+        return operandStack removeAt(operandStack lastIndex())
     }
 
     call: inline func(findex: UInt8) {
-        returns add(ContextReturn new(baseVar, functionIndex , pc, script))
+        callStack add(ContextReturn new(baseVar, functionIndex , ip, script))
         if (findex >= script functions getSize())
             error("VerificationFailed")
 
@@ -378,15 +383,15 @@ Interp: class {
         nbVar = fct numberOfArguments + fct numberOfLocalVariables
         for (i in 0..fct numberOfLocalVariables)
             push(WmlsString new(""))
-        baseVar = stack getSize() - nbVar
+        baseVar = operandStack getSize() - nbVar
         functionIndex = findex
         codeArray = fct codeArray
         codeSize = codeArray getSize()
-        pc = 0
+        ip = 0
     }
 
     callUrl: inline func(urlindex, findex: UInt16, args: UInt8) {
-        returns add(ContextReturn new(baseVar, functionIndex , pc, script))
+        callStack add(ContextReturn new(baseVar, functionIndex , ip, script))
         if (urlindex >= nbCst)
             error("VerificationFailed")
         url := constants[urlindex]
@@ -407,23 +412,23 @@ Interp: class {
         nbVar = fct numberOfArguments + fct numberOfLocalVariables
         for (i in 0..fct numberOfLocalVariables)
             push(WmlsString new(""))
-        baseVar = stack getSize() - nbVar
+        baseVar = operandStack getSize() - nbVar
         functionIndex = findex
         codeArray = fct codeArray
         codeSize = codeArray getSize()
-        pc = 0
+        ip = 0
     }
 
     _return: inline func(val: WmlsAny) -> Bool {
-        while (stack getSize() > baseVar)
+        while (operandStack getSize() > baseVar)
             pop()
         push(val)
 
-        if (returns getSize() == 0) {
+        if (callStack getSize() == 0) {
             return true
         }
         // restore context
-        ctxt := returns removeAt(returns lastIndex())
+        ctxt := callStack removeAt(callStack lastIndex())
         if (ctxt script != script) {
             script = ctxt script
             constants = script constants
@@ -433,7 +438,7 @@ Interp: class {
         nbVar := fct numberOfArguments + fct numberOfLocalVariables
         codeArray = fct codeArray
         codeSize = codeArray getSize()
-        pc = ctxt pc
+        ip = ctxt ip
         baseVar = ctxt baseVar
         return false
     }
@@ -451,13 +456,13 @@ Interp: class {
 
     dump: func() {
         "-------------------------------" println()
-        for (element in stack)
+        for (element in operandStack)
             element _repr() println()
-        if (pc == codeSize)
-            "PC %d\tEND" format(pc) println()
+        if (ip == codeSize)
+            "IP %d\tEND" format(ip) println()
         else {
             fct := script functions[functionIndex]
-            "PC %d\t%s" format(pc, fct _reprOpcode(pc)) println()
+            "IP %d\t%s" format(ip, fct _reprOpcode(ip)) println()
         }
     }
 }
