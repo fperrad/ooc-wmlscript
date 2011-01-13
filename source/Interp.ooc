@@ -21,12 +21,12 @@ WmlsLib: class extends HashMap<UInt, Func(Interp)> {
 */
 
 ContextReturn: class {
-    baseVar: UInt8 { get set }
+    variables: ArrayList<WmlsAny> { get set }
     functionIndex: UInt8 { get set }
     ip: UInt16 { get set }
     script: Script { get set }
 
-    init: func~call(=baseVar, =functionIndex, =ip, =script) {}
+    init: func~call(=variables, =functionIndex, =ip, =script) {}
 }
 
 Interp: class {
@@ -34,7 +34,7 @@ Interp: class {
     operandStack:       ArrayList<WmlsAny>
     callStack:          ArrayList<ContextReturn>
     constants:          ArrayList<WmlsAny>
-    baseVar:            SizeT
+    variables:          ArrayList<WmlsAny>
     script:             Script
     functionIndex:      UInt8
     nbVar:              UInt8
@@ -50,20 +50,20 @@ Interp: class {
         libs = HashMap<UInt, Func(Interp) -> WmlsAny > new()
         operandStack = ArrayList<WmlsAny> new(capacity)
         callStack = ArrayList<ContextReturn> new()
-        baseVar = 0
 
         constants = script constants
         nbCst = constants getSize()
         fct := script functions[functionIndex]
         nbVar = fct numberOfArguments + fct numberOfLocalVariables
+        variables = ArrayList<WmlsAny> new(nbVar)
         codeArray = fct codeArray
         codeSize = codeArray getSize()
         ip = 0
 
         for (arg in args)
-            push(WmlsString new(arg))
+            variables add(WmlsString new(arg))
         for (i in 0..fct numberOfLocalVariables)
-            push(WmlsString new(""))
+            variables add(WmlsString new(""))
     }
 
     addLib: func(lindex: UInt16,
@@ -200,34 +200,31 @@ Interp: class {
                 case LOAD_VAR_S =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    push(operandStack[baseVar + idx1])
+                    push(variables[idx1])
                 case LOAD_VAR =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    push(operandStack[baseVar + idx1])
+                    push(variables[idx1])
                 case STORE_VAR_S =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    operandStack[baseVar + idx1] = pop()
+                    variables[idx1] = pop()
                 case STORE_VAR =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    operandStack[baseVar + idx1] = pop()
+                    variables[idx1] = pop()
                 case INCR_VAR_S =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    operandStack[baseVar + idx1] =
-                        operandStack[baseVar + idx1] incr()
+                    variables[idx1] = variables[idx1] incr()
                 case INCR_VAR =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    operandStack[baseVar + idx1] =
-                        operandStack[baseVar + idx1] incr()
+                    variables[idx1] = variables[idx1] incr()
                 case DECR_VAR =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    operandStack[baseVar + idx1] =
-                        operandStack[baseVar + idx1] decr()
+                    variables[idx1] = variables[idx1] decr()
                 case LOAD_CONST_S =>
                     if (idx1 >= nbCst)
                         error("VerificationFailed")
@@ -261,13 +258,11 @@ Interp: class {
                 case ADD_ASG =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    operandStack[baseVar + idx1] =
-                        operandStack[baseVar + idx1] add(pop())
+                    variables[idx1] = variables[idx1] add(pop())
                 case SUB_ASG =>
                     if (idx1 >= nbVar)
                         error("VerificationFailed")
-                    operandStack[baseVar + idx1] =
-                        operandStack[baseVar + idx1] sub(pop())
+                    variables[idx1] = variables[idx1] sub(pop())
                 case UMINUS =>
                     push(pop() uminus())
                 case ADD =>
@@ -375,15 +370,18 @@ Interp: class {
     }
 
     call: inline func(findex: UInt8) {
-        callStack add(ContextReturn new(baseVar, functionIndex , ip, script))
+        callStack add(ContextReturn new(variables, functionIndex , ip, script))
         if (findex >= script functions getSize())
             error("VerificationFailed")
 
         fct := script functions[findex]
-        nbVar = fct numberOfArguments + fct numberOfLocalVariables
-        for (i in 0..fct numberOfLocalVariables)
-            push(WmlsString new(""))
-        baseVar = operandStack getSize() - nbVar
+        nbArg := fct numberOfArguments
+        nbVar = nbArg + fct numberOfLocalVariables
+        variables = ArrayList<WmlsAny> new(nbVar)
+        for (i in 0..nbVar)
+            variables add(WmlsString new(""))
+        for (i in 0..nbArg)
+            variables[nbArg - 1 - i] = pop()
         functionIndex = findex
         codeArray = fct codeArray
         codeSize = codeArray getSize()
@@ -391,7 +389,7 @@ Interp: class {
     }
 
     callUrl: inline func(urlindex, findex: UInt16, args: UInt8) {
-        callStack add(ContextReturn new(baseVar, functionIndex , ip, script))
+        callStack add(ContextReturn new(variables, functionIndex , ip, script))
         if (urlindex >= nbCst)
             error("VerificationFailed")
         url := constants[urlindex]
@@ -409,10 +407,13 @@ Interp: class {
         constants = script constants
         nbCst = constants getSize()
         fct := script functions[findex]
-        nbVar = fct numberOfArguments + fct numberOfLocalVariables
-        for (i in 0..fct numberOfLocalVariables)
-            push(WmlsString new(""))
-        baseVar = operandStack getSize() - nbVar
+        nbArg := fct numberOfArguments
+        nbVar = nbArg + fct numberOfLocalVariables
+        variables = ArrayList<WmlsAny> new(nbVar)
+        for (i in 0..nbVar)
+            variables add(WmlsString new(""))
+        for (i in 0..nbArg)
+            variables[nbArg - 1 - i] = pop()
         functionIndex = findex
         codeArray = fct codeArray
         codeSize = codeArray getSize()
@@ -420,8 +421,6 @@ Interp: class {
     }
 
     _return: inline func(val: WmlsAny) -> Bool {
-        while (operandStack getSize() > baseVar)
-            pop()
         push(val)
 
         if (callStack getSize() == 0) {
@@ -434,12 +433,13 @@ Interp: class {
             constants = script constants
             nbCst = constants getSize()
         }
-        fct := script functions[ctxt functionIndex]
-        nbVar := fct numberOfArguments + fct numberOfLocalVariables
+        functionIndex = ctxt functionIndex
+        fct := script functions[functionIndex]
         codeArray = fct codeArray
         codeSize = codeArray getSize()
         ip = ctxt ip
-        baseVar = ctxt baseVar
+        variables = ctxt variables
+        nbVar = variables getSize()
         return false
     }
 
