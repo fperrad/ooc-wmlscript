@@ -546,6 +546,10 @@ WmlsString: class extends WmlsAny {
 
     init: func(=v) {}
 
+    init: func~empty() {
+        v = ""
+    }
+
     _repr: inline func -> String {
         return "S " + _toString()
     }

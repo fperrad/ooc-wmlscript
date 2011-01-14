@@ -63,7 +63,7 @@ Interp: class {
         for (arg in args)
             variables add(WmlsString new(arg))
         for (i in 0..fct numberOfLocalVariables)
-            variables add(WmlsString new(""))
+            variables add(WmlsString new())
     }
 
     addLib: func(lindex: UInt16,
@@ -244,7 +244,7 @@ Interp: class {
                 case CONST_M1 =>
                     push(WmlsInteger new(-1))
                 case CONST_ES =>
-                    push(WmlsString new(""))
+                    push(WmlsString new())
                 case CONST_INVALID =>
                     push(WmlsInvalid new())
                 case CONST_TRUE =>
@@ -348,7 +348,7 @@ Interp: class {
                     if (_return(pop()))
                         return
                 case RETURN_ES =>
-                    if (_return(WmlsString new("")))
+                    if (_return(WmlsString new()))
                         return
                 case DEBUG =>
                     /* nop */
@@ -379,7 +379,7 @@ Interp: class {
         nbVar = nbArg + fct numberOfLocalVariables
         variables = ArrayList<WmlsAny> new(nbVar)
         for (i in 0..nbVar)
-            variables add(WmlsString new(""))
+            variables add(WmlsString new())
         for (i in 0..nbArg)
             variables[nbArg - 1 - i] = pop()
         functionIndex = findex
@@ -411,7 +411,7 @@ Interp: class {
         nbVar = nbArg + fct numberOfLocalVariables
         variables = ArrayList<WmlsAny> new(nbVar)
         for (i in 0..nbVar)
-            variables add(WmlsString new(""))
+            variables add(WmlsString new())
         for (i in 0..nbArg)
             variables[nbArg - 1 - i] = pop()
         functionIndex = findex

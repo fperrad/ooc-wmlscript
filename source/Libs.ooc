@@ -163,7 +163,7 @@ langLib put(13, func(interp: Interp) -> WmlsAny {
         return WmlsInvalid new()
     seed := val _toInt()
     srand(seed >= 0 ? seed : Time microtime())
-    return WmlsString new("")
+    return WmlsString new()
 })
 
 langLib put(14, func(interp: Interp) -> WmlsAny {

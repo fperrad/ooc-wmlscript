@@ -135,7 +135,7 @@ Script: class {
                     stringSize := getMB32(stream)
                     cst = WmlsString new(getString(stream, stringSize))
                 case 5 =>
-                    cst = WmlsString new("")
+                    cst = WmlsString new()
                 case 6 =>
                     stringSize := getMB32(stream)
                     cst = WmlsString new(getString(stream, stringSize))
