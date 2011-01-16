@@ -34,7 +34,7 @@ CODE
 0
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Lang.abs', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'Lang.abs');
 extern function main()
 {
     var a = Lang.abs(-3.14);
@@ -107,7 +107,7 @@ true
 0
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Lang.max', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'Lang.max');
 extern function main()
 {
     var a = -3;
@@ -246,7 +246,7 @@ CODE
 4
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Lang.parseFloat', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'Lang.parseFloat');
 extern function main()
 {
     var a = Lang.parseFloat(12);

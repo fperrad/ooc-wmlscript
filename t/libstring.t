@@ -560,7 +560,7 @@ true
 2
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'String.toString', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'String.toString');
 extern function main()
 {
     var a = String.toString("str");

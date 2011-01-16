@@ -262,7 +262,7 @@ CODE
 0
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'true * 3.14', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'true * 3.14', cflags => '-On');
 extern function main()
 {
     var a = true * 3.14;
@@ -284,7 +284,7 @@ CODE
 4
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'true / 2', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'true / 2', cflags => '-On');
 extern function main()
 {
     var a = true / 2;
@@ -296,7 +296,7 @@ CODE
 1
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'true / 2.0', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'true / 2.0', cflags => '-On');
 extern function main()
 {
     var a = true / 2.0;
@@ -320,7 +320,7 @@ CODE
 0
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'true - 1.5', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'true - 1.5', cflags => '-On');
 extern function main()
 {
     var a = true - 1.5;

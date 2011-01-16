@@ -61,7 +61,7 @@ CODE
 0
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'floating-point', cflags => '-On', todo=>'float');
+wmls_is(<<'CODE', <<'OUT', 'floating-point', cflags => '-On');
 extern function main()
 {
     var a = 0.0;
