@@ -30,7 +30,7 @@ true
 3
 OUT
 
-wmls_is(<<'CODE', <<'OUT', '! 3.14', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', '! 3.14', cflags => '-On');
 extern function main()
 {
     var a = ! 3.14;
@@ -330,7 +330,7 @@ true
 3
 OUT
 
-wmls_is(<<'CODE', <<'OUT', '3.14 == 2.0', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', '3.14 == 2.0', cflags => '-On');
 extern function main()
 {
     var a = 3.14 == 2.0;
@@ -342,7 +342,7 @@ false
 3
 OUT
 
-wmls_is(<<'CODE', <<'OUT', '3.14 != 2.0', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', '3.14 != 2.0', cflags => '-On');
 extern function main()
 {
     var a = 3.14 != 2.0;
@@ -354,7 +354,7 @@ true
 3
 OUT
 
-wmls_is(<<'CODE', <<'OUT', '3.0 == 3', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', '3.0 == 3', cflags => '-On');
 extern function main()
 {
     var a = 3.0 == 3;
@@ -422,7 +422,7 @@ CODE
 4
 OUT
 
-wmls_is(<<'CODE', <<'OUT', '3.14 <= 2.0', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', '3.14 <= 2.0', cflags => '-On');
 extern function main()
 {
     var a = 3.14 <= 2.0;
@@ -434,7 +434,7 @@ false
 3
 OUT
 
-wmls_is(<<'CODE', <<'OUT', '3.14 < 2', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', '3.14 < 2', cflags => '-On');
 extern function main()
 {
     var a = 3.14 <= 2;
@@ -446,7 +446,7 @@ false
 3
 OUT
 
-wmls_is(<<'CODE', <<'OUT', '3.14 >= true', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', '3.14 >= true', cflags => '-On');
 extern function main()
 {
     var a = 3.14 >= true;

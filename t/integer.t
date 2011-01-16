@@ -422,7 +422,7 @@ true
 3
 OUT
 
-wmls_is(<<'CODE', <<'OUT', '3 == 3.0', cflags => '-On', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', '3 == 3.0', cflags => '-On');
 extern function main()
 {
     var a = 3 == 3.0;

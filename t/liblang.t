@@ -58,7 +58,7 @@ CODE
 4
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Lang.min', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'Lang.min');
 extern function main()
 {
     var a = -3;

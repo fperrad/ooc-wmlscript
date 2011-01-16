@@ -82,12 +82,8 @@ getInt32: inline func(stream: Reader) -> Int32 {
 }
 
 getFloat: inline func(stream: Reader) -> Float {
-    value := 0.0 as Float
-    // FIXME
-    c := stream read() as UInt8
-    c = stream read() as UInt8
-    c = stream read() as UInt8
-    c = stream read() as UInt8
+    value: Float
+    stream read(value& as Char*, 0, 4)
     return value
 }
 
