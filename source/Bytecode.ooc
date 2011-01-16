@@ -92,11 +92,9 @@ getFloat: inline func(stream: Reader) -> Float {
 }
 
 getString: inline func(stream: Reader, size: Int32) -> String {
-    value := ""
-    // naive implementation
-    for (i in 0..size)
-        value += stream read()
-    return value
+    buff := CString new(size)
+    stream read(buff, 0, size)
+    return String new(buff, size)
 }
 
 Script: class {
