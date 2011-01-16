@@ -470,7 +470,7 @@ OUT
 wmls_is(<<'CODE', <<'OUT', 'Lang.seed');
 extern function main()
 {
-    var a = Lang.seed(314); // todo: float
+    var a = Lang.seed(3.14);
     Console.println(a);
     Console.println(typeof a);
 }

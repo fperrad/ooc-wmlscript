@@ -152,7 +152,7 @@ extern function main()
     Console.println(b);
     Console.println(typeof b);
 
-    var c = String.charAt(a, 3);  // todo: float 3.14
+    var c = String.charAt(a, 3.14);
     Console.println(c);
     Console.println(typeof c);
 

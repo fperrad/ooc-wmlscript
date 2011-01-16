@@ -17,8 +17,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin";
 
-#use Test::More tests => 8;
-use Test::More skip_all => 'float';
+use Test::More tests => 8;
 require Helpers;
 
 wmls_is(<<'CODE', <<'OUT', 'Float.int');
@@ -91,7 +90,7 @@ CODE
 1
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Float.round');
+wmls_is(<<'CODE', <<'OUT', 'Float.round', todo => 'round');
 extern function main()
 {
     var a = Float.round(3.5);
@@ -121,7 +120,7 @@ CODE
 0
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Float.sqrt');
+wmls_is(<<'CODE', <<'OUT', 'Float.sqrt', todo => 'float');
 extern function main()
 {
     var a = 4;
@@ -144,7 +143,7 @@ CODE
 4
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Float.maxFloat');
+wmls_is(<<'CODE', <<'OUT', 'Float.maxFloat', todo => 'float');
 extern function main()
 {
     var a = Float.maxFloat();
@@ -156,7 +155,7 @@ CODE
 1
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Float.minFloat');
+wmls_is(<<'CODE', <<'OUT', 'Float.minFloat', todo => 'float');
 extern function main()
 {
     var a = Float.minFloat();
