@@ -120,7 +120,7 @@ CODE
 0
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Float.sqrt', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'Float.sqrt');
 extern function main()
 {
     var a = 4;
@@ -143,7 +143,7 @@ CODE
 4
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Float.maxFloat', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'Float.maxFloat');
 extern function main()
 {
     var a = Float.maxFloat();
@@ -155,7 +155,7 @@ CODE
 1
 OUT
 
-wmls_is(<<'CODE', <<'OUT', 'Float.minFloat', todo => 'float');
+wmls_is(<<'CODE', <<'OUT', 'Float.minFloat');
 extern function main()
 {
     var a = Float.minFloat();

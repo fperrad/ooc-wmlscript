@@ -409,23 +409,9 @@ WmlsFloat: class extends WmlsNumber {
     }
 
     _toString: inline func -> String {
-//        return "%f" format(v)
-//        return v toString() // FIXME
-        /* workaround */
-        ip, dp: Int
-        neg := v < 0.0
-        ip = v
-        dp = 100000*v - 100000*ip
-        if (ip < 0)
-            ip = - ip
-        if (dp < 0)
-            dp = - dp
-        s:= "%s%d.%05d" format(neg ? "-" : "", ip, dp)
-        while (s endsWith?("0"))
-            s = s substring(0, s length() - 1)
-        if (s endsWith?("."))
-            s = s substring(0, s length() - 1)
-        return s
+        buff := CString new(20)
+        n := sprintf(buff, "%.6g", v)
+        return String new(buff, n)
     }
 
     _toBool: inline func -> Bool {
